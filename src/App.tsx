@@ -1,12 +1,15 @@
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { useStore } from './hooks/useStore'
-import { Container, Row, Col, Button, Form, Stack } from 'react-bootstrap'
+import { Container, Row, Col, Button, Stack } from 'react-bootstrap'
 import { AUTO_LANGUAGE } from './constants'
 import { ArrowsIcon } from './components/Icons'
 import { LanguageSelector } from './components/LanguageSelector'
 import { SectionType } from './types.d'
 import { TextArea } from './components/TextArea'
+import { useEffect } from 'react'
+import { translate } from './services/translate'
+import { useDebounced } from './hooks/useDebounced'
 
 function App() {
   const {
@@ -21,6 +24,20 @@ function App() {
     loading,
     result
   } = useStore()
+
+  const debuncedFromText = useDebounced(fromText, 350)
+
+  useEffect(() => {
+    if (debuncedFromText === '') return
+    translate({ fromLanguage, toLanguage, text: debuncedFromText })
+      .then((result) => {
+        if (result == null) return
+        setResult(result)
+      })
+      .catch(() => {
+        setResult('Error')
+      })
+  }, [debuncedFromText, fromLanguage, toLanguage])
 
   return (
     <Container>
