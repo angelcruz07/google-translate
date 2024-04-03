@@ -2,8 +2,8 @@ import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { useStore } from './hooks/useStore'
 import { Container, Row, Col, Button, Stack } from 'react-bootstrap'
-import { AUTO_LANGUAGE } from './constants'
-import { ArrowsIcon, ClipboardIcon } from './components/Icons'
+import { AUTO_LANGUAGE, VOICE_FOR_LANGUGAGE } from './constants'
+import { ArrowsIcon, ClipboardIcon, SpeakerIcon } from './components/Icons'
 import { LanguageSelector } from './components/LanguageSelector'
 import { SectionType } from './types.d'
 import { TextArea } from './components/TextArea'
@@ -41,6 +41,13 @@ function App() {
 
   const handleClipboard = () => {
     navigator.clipboard.writeText(result).catch(() => {})
+  }
+
+  const handleSpeak = () => {
+    const utterance = new SpeechSynthesisUtterance(result)
+    utterance.lang = VOICE_FOR_LANGUGAGE[toLanguage]
+    utterance.rate = 0.9
+    speechSynthesis.speak(utterance)
   }
 
   return (
@@ -85,12 +92,20 @@ function App() {
                 type={SectionType.To}
                 value={result}
               />
-              <Button
-                variant='link'
-                style={{ position: 'absolute', left: 0, bottom: 0 }}
-                onClick={handleClipboard}>
-                <ClipboardIcon />
-              </Button>
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  bottom: 0,
+                  display: 'flex'
+                }}>
+                <Button variant='link' onClick={handleClipboard}>
+                  <ClipboardIcon />
+                </Button>
+                <Button variant='link' onClick={handleSpeak}>
+                  <SpeakerIcon />
+                </Button>
+              </div>
             </div>
           </Stack>
         </Col>
